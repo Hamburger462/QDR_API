@@ -7,7 +7,7 @@
 
         public string Description { get; set; } = string.Empty;
 
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         public List<Event> Events { get; set; } = new List<Event>();
     }

@@ -10,5 +10,7 @@
         public List<User> Users { get; set; } = new List<User>();
 
         public List<Event> Events { get; set; } = new List<Event>();
+
+        public bool IsVerified { get; set; } = false;
     }
 }

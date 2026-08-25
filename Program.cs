@@ -1,6 +1,10 @@
 
+using HealthChecks.UI.Client;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using QDR_Server.Data;
+using QDR_Server.Models;
 
 namespace QDR_Server
 {
@@ -19,6 +23,8 @@ namespace QDR_Server
             builder.Services.AddDbContext<AppDbContext>(options =>
             options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+            builder.Services.AddHealthChecks().AddNpgSql(builder.Configuration.GetConnectionString("DefaultConnection")!);
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -31,6 +37,10 @@ namespace QDR_Server
 
             app.UseAuthorization();
 
+            app.MapHealthChecks("/health", new HealthCheckOptions
+            {
+                ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+            });
 
             app.MapControllers();
 

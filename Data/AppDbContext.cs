@@ -17,10 +17,9 @@ namespace QDR_Server.Data
         {
             // Organization → Users (one-to-many)
             modelBuilder.Entity<User>()
-                .HasOne(u => u.Organization)
-                .WithMany(o => o.Users)
-                .HasForeignKey(u => u.OrganizationID)
-                .OnDelete(DeleteBehavior.Cascade);
+    .HasMany(u => u.Organizations)
+    .WithMany(o => o.Users)
+    .UsingEntity(j => j.ToTable("UserOrganizations"));
 
             // Organization → Events (one-to-many)
             modelBuilder.Entity<Event>()

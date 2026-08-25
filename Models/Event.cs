@@ -10,7 +10,7 @@
         public string Location { get; set; } = string.Empty;
         public DateTime Date { get; set; }
         public string Status { get; set; } = string.Empty;
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         public Organization? Organization { get; set; }
         public Guid OrganizationID { get; set; }
