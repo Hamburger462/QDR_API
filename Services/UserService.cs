@@ -6,7 +6,7 @@ using QDR_Server.Models;
 namespace QDR_Server.Services
 {
     // Status codes
-    public enum UserOperationResult
+    public enum UserOperationStatus
     {
         Success,
         UserNotFound,
@@ -16,10 +16,10 @@ namespace QDR_Server.Services
 
     public class UserService(AppDbContext context)
     {
-        public async Task<IEnumerable<UserResponseDto>> GetAllUsers()
+        public async Task<(IEnumerable<UserResponseDTO>?, UserOperationStatus)> GetAllUsers()
         {
-            return await context.Users
-                .Select(user => new UserResponseDto(
+            var users = await context.Users
+                .Select(user => new UserResponseDTO(
                     user.Id,
                     user.Username,
                     user.Email,
@@ -27,24 +27,26 @@ namespace QDR_Server.Services
                     user.IsVerified,
                     user.Organizations.Select(o => o.Id).ToList()))
                 .ToListAsync();
+            if(users == null) return (null, UserOperationStatus.UserNotFound);
+            return (users, UserOperationStatus.Success);
         }
 
-        public async Task<UserResponseDto?> GetUserById(Guid id)
+        public async Task<(UserResponseDTO?, UserOperationStatus)> GetUserById(Guid id)
         {
             var user = await context.Users
                 .Include(u => u.Organizations)
                 .FirstOrDefaultAsync(u => u.Id == id);
 
-            if (user is null)
-                return null;
+            if(user == null) return (null, UserOperationStatus.UserNotFound) ;
 
-            return new UserResponseDto(
+            return (
+                new UserResponseDTO(
                 user.Id,
                 user.Username,
                 user.Email,
                 user.Role,
                 user.IsVerified,
-                user.Organizations.Select(o => o.Id).ToList());
+                user.Organizations.Select(o => o.Id).ToList()), UserOperationStatus.Success);
         }
 
         public async Task<User?> GetUserByEmailForAuth(string email)
@@ -52,11 +54,11 @@ namespace QDR_Server.Services
             return await context.Users.FirstOrDefaultAsync(u => u.Email == email);
         }
 
-        public async Task<(UserOperationResult Result, User? User)> CreateUser(CreateUserDto dto)
+        public async Task<(UserOperationStatus, User? User)> CreateUser(CreateUserDTO dto)
         {
             var emailTaken = await context.Users.AnyAsync(u => u.Email == dto.Email);
             if (emailTaken)
-                return (UserOperationResult.EmailTaken, null);
+                return (UserOperationStatus.EmailTaken, null);
 
             var orgs = new List<Organization>();
             // Organization WIP
@@ -74,7 +76,7 @@ namespace QDR_Server.Services
             {
                 Username = dto.Username,
                 Email = dto.Email,
-                Role = dto.Role,
+                Role = "Member",
                 Organizations = orgs,
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password)
             };
@@ -82,17 +84,17 @@ namespace QDR_Server.Services
             context.Users.Add(user);
             await context.SaveChangesAsync();
 
-            return (UserOperationResult.Success, user);
+            return (UserOperationStatus.Success, user);
         }
 
-        public async Task<UserOperationResult> UpdateUserById(Guid id, UpdateUserDto dto)
+        public async Task<UserOperationStatus> UpdateUserById(Guid id, UpdateUserDTO dto)
         {
             var user = await context.Users
                 .Include(u => u.Organizations)
                 .FirstOrDefaultAsync(u => u.Id == id);
 
             if (user is null)
-                return UserOperationResult.UserNotFound;
+                return UserOperationStatus.UserNotFound;
 
             if (dto.Username is not null)
                 user.Username = dto.Username;
@@ -101,7 +103,7 @@ namespace QDR_Server.Services
             {
                 var emailTaken = await context.Users.AnyAsync(u => u.Email == dto.Email && u.Id != id);
                 if (emailTaken)
-                    return UserOperationResult.EmailTaken;
+                    return UserOperationStatus.EmailTaken;
 
                 user.Email = dto.Email;
             }
@@ -113,24 +115,23 @@ namespace QDR_Server.Services
                     .ToListAsync();
 
                 if (orgs.Count != dto.OrganizationIds.Count)
-                    return UserOperationResult.OrganizationNotFound;
+                    return UserOperationStatus.OrganizationNotFound;
 
                 user.Organizations = orgs;
             }
 
             await context.SaveChangesAsync();
-            return UserOperationResult.Success;
+            return UserOperationStatus.Success;
         }
 
-        public async Task<bool> DeleteUserById(Guid id)
+        public async Task<UserOperationStatus> DeleteUserById(Guid id)
         {
             var user = await context.Users.FindAsync(id);
-            if (user is null)
-                return false;
+            if (user is null) return UserOperationStatus.UserNotFound;
 
             context.Users.Remove(user);
             await context.SaveChangesAsync();
-            return true;
+            return UserOperationStatus.Success;
         }
     }
 }

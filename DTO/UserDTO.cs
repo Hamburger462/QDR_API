@@ -1,6 +1,6 @@
 ﻿namespace QDR_Server.DTO
 {
-    public record UserResponseDto(
+    public record UserResponseDTO(
     Guid Id,
     string Username,
     string Email,
@@ -9,16 +9,15 @@
     List<Guid> OrganizationIds
 );
 
-    public class CreateUserDto
+    public class CreateUserDTO
     {
         public required string Username { get; set; }
         public required string Email { get; set; }
         public required string Password { get; set; }
         public List<Guid> OrganizationIds { get; set; } = new();
-        public string Role { get; set; } = "Member";
     }
 
-    public class UpdateUserDto
+    public class UpdateUserDTO
     {
         public string? Username { get; set; }
         public string? Email { get; set; }

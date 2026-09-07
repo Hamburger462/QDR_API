@@ -31,6 +31,8 @@ namespace QDR_Server
             builder.Services.AddHealthChecks().AddNpgSql(builder.Configuration.GetConnectionString("DefaultConnection")!);
 
             builder.Services.AddScoped<TokenService>();
+            builder.Services.AddScoped<UserService>();
+            builder.Services.AddScoped<EventService>();
 
             builder.Services.AddAuthentication(options =>
             {
@@ -95,9 +97,9 @@ namespace QDR_Server
 
             app.UseHttpsRedirection();
 
-            app.UseAuthorization();
-
             app.UseAuthentication();
+
+            app.UseAuthorization();
 
             app.MapHealthChecks("/health", new HealthCheckOptions
             {

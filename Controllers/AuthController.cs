@@ -11,16 +11,16 @@ namespace QDR_Server.Controllers
     public class AuthController(TokenService tokenService, UserService userService) : ControllerBase
     {
         [HttpPost("register")]
-        public async Task<ActionResult> RegisterUser([FromBody] CreateUserDto registerData)
+        public async Task<ActionResult> RegisterUser([FromBody] CreateUserDTO registerData)
         {
             var (result, user) = await userService.CreateUser(registerData);
 
-            if (result != UserOperationResult.Success || user is null)
+            if (result != UserOperationStatus.Success || user is null)
             {
                 return result switch
                 {
-                    UserOperationResult.EmailTaken => Conflict("Email already in use."),
-                    UserOperationResult.OrganizationNotFound => BadRequest("One or more organizations do not exist."),
+                    UserOperationStatus.EmailTaken => Conflict("Email already in use."),
+                    UserOperationStatus.OrganizationNotFound => BadRequest("One or more organizations do not exist."),
                     _ => BadRequest()
                 };
             }

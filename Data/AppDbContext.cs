@@ -17,9 +17,9 @@ namespace QDR_Server.Data
         {
             // Organization → Users (one-to-many)
             modelBuilder.Entity<User>()
-    .HasMany(u => u.Organizations)
-    .WithMany(o => o.Users)
-    .UsingEntity(j => j.ToTable("UserOrganizations"));
+                .HasMany(u => u.Organizations)
+                .WithMany(o => o.Users)
+                .UsingEntity(j => j.ToTable("UserOrganizations"));
 
             // Organization → Events (one-to-many)
             modelBuilder.Entity<Event>()
@@ -55,6 +55,9 @@ namespace QDR_Server.Data
             modelBuilder.Entity<Organization>()
                 .HasIndex(o => o.Email)
                 .IsUnique();
+
+            // Setting User role default values
+            modelBuilder.Entity<User>().Property(u => u.Role).HasDefaultValue("Member");
         }
     }
 }
