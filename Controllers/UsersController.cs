@@ -15,7 +15,7 @@ namespace QDR_Server.Controllers
     {
         // GET: api/<UsersController>
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<UserResponseDTO>>> GetAll()
+        public async Task<ActionResult<IEnumerable<UserDTO>>> GetAll()
         {
             var (users, status) = await userService.GetAllUsers();
             switch (status)
@@ -31,7 +31,7 @@ namespace QDR_Server.Controllers
 
         // GET api/<UsersController>/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<UserResponseDTO>> GetById(Guid id)
+        public async Task<ActionResult<UserDTO>> GetById(Guid id)
         {
             var (users, status) = await userService.GetUserById(id);
 
@@ -47,7 +47,7 @@ namespace QDR_Server.Controllers
 
         // POST api/<UsersController>
         [HttpPost]
-        public async Task<ActionResult<UserResponseDTO>> Create(CreateUserDTO dto)
+        public async Task<ActionResult<UserDTO>> Create(CreateUserDTO dto)
         {
             var (result, user) = await userService.CreateUser(dto);
 
@@ -61,7 +61,7 @@ namespace QDR_Server.Controllers
                 };
             }
 
-            var response = new UserResponseDTO(
+            var response = new UserDTO(
                 user.Id,
                 user.Username,
                 user.Email,

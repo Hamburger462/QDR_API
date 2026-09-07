@@ -16,10 +16,10 @@ namespace QDR_Server.Services
 
     public class UserService(AppDbContext context)
     {
-        public async Task<(IEnumerable<UserResponseDTO>?, UserOperationStatus)> GetAllUsers()
+        public async Task<(IEnumerable<UserDTO>?, UserOperationStatus)> GetAllUsers()
         {
             var users = await context.Users
-                .Select(user => new UserResponseDTO(
+                .Select(user => new UserDTO(
                     user.Id,
                     user.Username,
                     user.Email,
@@ -31,7 +31,7 @@ namespace QDR_Server.Services
             return (users, UserOperationStatus.Success);
         }
 
-        public async Task<(UserResponseDTO?, UserOperationStatus)> GetUserById(Guid id)
+        public async Task<(UserDTO?, UserOperationStatus)> GetUserById(Guid id)
         {
             var user = await context.Users
                 .Include(u => u.Organizations)
@@ -40,7 +40,7 @@ namespace QDR_Server.Services
             if(user == null) return (null, UserOperationStatus.UserNotFound) ;
 
             return (
-                new UserResponseDTO(
+                new UserDTO(
                 user.Id,
                 user.Username,
                 user.Email,

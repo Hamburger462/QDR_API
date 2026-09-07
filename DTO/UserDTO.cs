@@ -1,6 +1,6 @@
 ﻿namespace QDR_Server.DTO
 {
-    public record UserResponseDTO(
+    public record UserDTO(
     Guid Id,
     string Username,
     string Email,
