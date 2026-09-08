@@ -12,11 +12,11 @@ namespace QDR_Server.Services
         OrganizationNotFound,
         CreationFailed,
     }
-    public class EventService(AppDbContext _context)
+    public class EventService(AppDbContext context)
     {
         public async Task<(List<EventDTO>?, EventOperationStatus)> GetAllEvents()
         {
-            var result = await _context.Events.Select(e => new EventDTO { 
+            var result = await context.Events.Select(e => new EventDTO { 
                 Name = e.Name, 
                 Description = e.Description, 
                 Date = e.Date, 
@@ -31,7 +31,7 @@ namespace QDR_Server.Services
 
         public async Task<(EventDTO?, EventOperationStatus)> GetEventById(Guid id)
         {
-            var result = await _context.Events.Where(e => e.Id == id).Select(e => new EventDTO
+            var result = await context.Events.Where(e => e.Id == id).Select(e => new EventDTO
             {
                 Name = e.Name,
                 Description = e.Description,
@@ -46,7 +46,7 @@ namespace QDR_Server.Services
 
         public async Task<EventOperationStatus> CreateEvent(CreateEventDTO dto)
         {
-            var orgExists = await _context.Organizations.AnyAsync(o => o.Id == dto.OrganizationID);
+            var orgExists = await context.Organizations.AnyAsync(o => o.Id == dto.OrganizationID);
             if (!orgExists)
                 return EventOperationStatus.OrganizationNotFound;
 
@@ -59,15 +59,15 @@ namespace QDR_Server.Services
                 OrganizationID = dto.OrganizationID
             };
 
-            _context.Events.Add(newEvent);
-            await _context.SaveChangesAsync();
+            context.Events.Add(newEvent);
+            await context.SaveChangesAsync();
 
             return EventOperationStatus.Success;
         }
 
         public async Task<EventOperationStatus> UpdateEvent(Guid id, UpdateEventDTO dto)
         {
-            var eventEntity = await _context.Events.FindAsync(id);
+            var eventEntity = await context.Events.FindAsync(id);
             if (eventEntity is null)
                 return EventOperationStatus.EventNotFound;
 
@@ -78,24 +78,24 @@ namespace QDR_Server.Services
 
             if (dto.OrganizationID is not null)
             {
-                var orgExists = await _context.Organizations.AnyAsync(o => o.Id == dto.OrganizationID);
+                var orgExists = await context.Organizations.AnyAsync(o => o.Id == dto.OrganizationID);
                 if (!orgExists)
                     return EventOperationStatus.OrganizationNotFound;   // ← now actually reported
 
                 eventEntity.OrganizationID = dto.OrganizationID.Value;
             }
 
-            await _context.SaveChangesAsync();
+            await context.SaveChangesAsync();
             return EventOperationStatus.Success;
         }
 
         public async Task<EventOperationStatus> DeleteEvent(Guid id)
         {
-            var event_obj = await _context.Events.FindAsync(id);
+            var event_obj = await context.Events.FindAsync(id);
             if (event_obj is null) return EventOperationStatus.EventNotFound;
 
-            _context.Events.Remove(event_obj);
-            await _context.SaveChangesAsync();
+            context.Events.Remove(event_obj);
+            await context.SaveChangesAsync();
 
             return EventOperationStatus.Success;
         }
