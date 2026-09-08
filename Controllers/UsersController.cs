@@ -78,13 +78,19 @@ namespace QDR_Server.Controllers
         {
             var result = await userService.UpdateUserById(id, dto);
 
-            return result switch
+            switch (result)
             {
-                UserOperationStatus.UserNotFound => NotFound(),
-                UserOperationStatus.EmailTaken => Conflict("Email already in use."),
-                UserOperationStatus.OrganizationNotFound => BadRequest("One or more organizations do not exist."),
-                _ => NoContent()
-            };
+                case UserOperationStatus.UserNotFound:
+                    return NotFound();
+                case UserOperationStatus.EmailTaken:
+                    return BadRequest();
+                case UserOperationStatus.OrganizationNotFound:
+                    return BadRequest();
+                case UserOperationStatus.Success:
+                    return Ok();
+                default:
+                    return BadRequest();
+            }
         }
 
         // DELETE api/<UsersController>/5
