@@ -73,5 +73,15 @@ namespace QDR_Server.Services
             await context.SaveChangesAsync();
             return OrgOperationStatus.Success;
         }
+
+        // Create a default user organization
+        public Organization CreateDefaultOrg(string name, string email)
+        {
+            return new Organization { 
+                Name = name,
+                Email = email,
+                Description = ""
+            };
+        }
     }
 }

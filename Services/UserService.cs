@@ -14,7 +14,7 @@ namespace QDR_Server.Services
         OrganizationNotFound
     }
 
-    public class UserService(AppDbContext context)
+    public class UserService(AppDbContext context, OrganizationService organizationService)
     {
         public async Task<(IEnumerable<UserDTO>?, UserOperationStatus)> GetAllUsers()
         {
@@ -60,24 +60,14 @@ namespace QDR_Server.Services
             if (emailTaken)
                 return (UserOperationStatus.EmailTaken, null);
 
-            var orgs = new List<Organization>();
-            // Organization WIP
-            //if (dto.OrganizationIds.Count > 0)
-            //{
-            //    orgs = await context.Organizations
-            //        .Where(o => dto.OrganizationIds.Contains(o.Id))
-            //        .ToListAsync();
-
-            //    if (orgs.Count != dto.OrganizationIds.Count)
-            //        return (UserOperationResult.OrganizationNotFound, null);
-            //}
+            var org = organizationService.CreateDefaultOrg(dto.Username, dto.Email);
 
             var user = new User
             {
                 Username = dto.Username,
                 Email = dto.Email,
                 Role = "Member",
-                Organizations = orgs,
+                Organizations = new List<Organization> { org },
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password)
             };
 
