@@ -27,7 +27,7 @@ namespace QDR_Server.Services
                     user.IsVerified,
                     user.Organizations.Select(o => o.Id).ToList()))
                 .ToListAsync();
-            if(users == null) return (null, UserOperationStatus.UserNotFound);
+            if(users.Count == 0) return (null, UserOperationStatus.UserNotFound);
             return (users, UserOperationStatus.Success);
         }
 
@@ -87,7 +87,7 @@ namespace QDR_Server.Services
             return (UserOperationStatus.Success, user);
         }
 
-        public async Task<UserOperationStatus> UpdateUserById(Guid id, UpdateUserDTO dto)
+        public async Task<UserOperationStatus> UpdateUser(Guid id, UpdateUserDTO dto)
         {
             var user = await context.Users
                 .Include(u => u.Organizations)
@@ -124,7 +124,7 @@ namespace QDR_Server.Services
             return UserOperationStatus.Success;
         }
 
-        public async Task<UserOperationStatus> DeleteUserById(Guid id)
+        public async Task<UserOperationStatus> DeleteUser(Guid id)
         {
             var user = await context.Users.FindAsync(id);
             if (user is null) return UserOperationStatus.UserNotFound;

@@ -1,8 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using QDR_Server.Data;
 using QDR_Server.Services;
 using QDR_Server.DTO;
-using Microsoft.EntityFrameworkCore;
+
 
 namespace QDR_Server.Controllers
 {

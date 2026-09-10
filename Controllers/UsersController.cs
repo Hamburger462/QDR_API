@@ -1,11 +1,7 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 
 using QDR_Server.DTO;
-using QDR_Server.DTO.ResponseMessages;
-using QDR_Server.Models;
 using QDR_Server.Services;
-using System.Security.Claims;
 
 namespace QDR_Server.Controllers
 {
@@ -47,7 +43,7 @@ namespace QDR_Server.Controllers
 
         // POST api/<UsersController>
         [HttpPost]
-        public async Task<ActionResult<UserDTO>> Create(CreateUserDTO dto)
+        public async Task<ActionResult<UserDTO>> Create([FromBody] CreateUserDTO dto)
         {
             var (result, user) = await userService.CreateUser(dto);
 
@@ -74,9 +70,9 @@ namespace QDR_Server.Controllers
 
         // PUT api/<UsersController>/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(Guid id, UpdateUserDTO dto)
+        public async Task<IActionResult> Update(Guid id, [FromBody] UpdateUserDTO dto)
         {
-            var result = await userService.UpdateUserById(id, dto);
+            var result = await userService.UpdateUser(id, dto);
 
             switch (result)
             {
@@ -97,7 +93,7 @@ namespace QDR_Server.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var status = await userService.DeleteUserById(id);
+            var status = await userService.DeleteUser(id);
             switch (status) {
                 case UserOperationStatus.UserNotFound:
                     return NotFound();

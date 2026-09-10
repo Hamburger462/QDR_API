@@ -22,10 +22,10 @@ namespace QDR_Server.Services
                 Date = e.Date, 
                 Location = e.Location})
                 .ToListAsync();
-            if (result == null) {
+            if (result.Count == 0) {
                 return (null, EventOperationStatus.EventNotFound);
             }
-            ;
+            
             return (result, EventOperationStatus.Success);
         }
 
@@ -91,10 +91,10 @@ namespace QDR_Server.Services
 
         public async Task<EventOperationStatus> DeleteEvent(Guid id)
         {
-            var event_obj = await context.Events.FindAsync(id);
-            if (event_obj is null) return EventOperationStatus.EventNotFound;
+            var eventObj = await context.Events.FindAsync(id);
+            if (eventObj is null) return EventOperationStatus.EventNotFound;
 
-            context.Events.Remove(event_obj);
+            context.Events.Remove(eventObj);
             await context.SaveChangesAsync();
 
             return EventOperationStatus.Success;

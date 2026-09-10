@@ -2,10 +2,11 @@
 using Microsoft.AspNetCore.Mvc;
 using QDR_Server.DTO;
 using QDR_Server.DTO.ResponseMessages;
+using QDR_Server.Services;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
-namespace QDR_Server.Services
+namespace QDR_Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

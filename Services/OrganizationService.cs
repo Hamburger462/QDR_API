@@ -22,7 +22,7 @@ namespace QDR_Server.Services
                     isVerified = o.IsVerified,
                 })
                 .ToListAsync();
-            if (orgs == null) return (null, OrgOperationStatus.OrganizationNotFound);
+            if (orgs.Count == 0) return (null, OrgOperationStatus.OrganizationNotFound);
             return (orgs, OrgOperationStatus.Success);
         }
         // Get single organization by id
