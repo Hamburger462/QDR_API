@@ -1,15 +1,13 @@
-
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using QDR_Server.Data;
-using QDR_Server.Models;
-using QDR_Server.Services;
 using System.Text;
+
+using QDR_Server.Data;
+using QDR_Server.Services;
 
 namespace QDR_Server
 {
@@ -33,6 +31,7 @@ namespace QDR_Server
             builder.Services.AddScoped<TokenService>();
             builder.Services.AddScoped<UserService>();
             builder.Services.AddScoped<EventService>();
+            builder.Services.AddScoped<OrganizationService>();
 
             builder.Services.AddAuthentication(options =>
             {
