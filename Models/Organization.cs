@@ -12,5 +12,7 @@
         public List<Event> Events { get; set; } = new List<Event>();
 
         public bool IsVerified { get; set; } = false;
+
+        public List<UserOrganization> UserOrganizations { get; set; } = new();
     }
 }

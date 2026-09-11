@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using QDR_Server.Models;
-using System;
 
 namespace QDR_Server.Data
 {
@@ -16,10 +15,18 @@ namespace QDR_Server.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             // Organization → Users (one-to-many)
-            modelBuilder.Entity<User>()
-                .HasMany(u => u.Organizations)
-                .WithMany(o => o.Users)
-                .UsingEntity(j => j.ToTable("UserOrganizations"));
+            modelBuilder.Entity<UserOrganization>()
+            .HasKey(uo => new { uo.UserId, uo.OrganizationId }); 
+
+            modelBuilder.Entity<UserOrganization>()
+                .HasOne(uo => uo.User)
+                .WithMany(u => u.UserOrganizations)
+                .HasForeignKey(uo => uo.UserId);
+
+            modelBuilder.Entity<UserOrganization>()
+                .HasOne(uo => uo.Organization)
+                .WithMany(o => o.UserOrganizations)
+                .HasForeignKey(uo => uo.OrganizationId);
 
             // Organization → Events (one-to-many)
             modelBuilder.Entity<Event>()

@@ -12,5 +12,7 @@
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         public bool IsVerified { get; set; } = false;
+
+        public List<UserOrganization> UserOrganizations { get; set; } = new();
     }
 }
