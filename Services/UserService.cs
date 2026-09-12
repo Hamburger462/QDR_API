@@ -27,7 +27,7 @@ namespace QDR_Server.Services
                     user.IsVerified,
                     user.Organizations.Select(o => o.Id).ToList()))
                 .ToListAsync();
-            if(users.Count == 0) return (null, UserOperationStatus.UserNotFound);
+            if (users.Count == 0) return (null, UserOperationStatus.UserNotFound);
             return (users, UserOperationStatus.Success);
         }
 
