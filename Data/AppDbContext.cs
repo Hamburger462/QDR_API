@@ -11,6 +11,7 @@ namespace QDR_Server.Data
         public DbSet<Organization> Organizations => Set<Organization>();
         public DbSet<Event> Events => Set<Event>();
         public DbSet<Category> Categories => Set<Category>();
+        public DbSet<UserOrganization> UserOrganizations => Set<UserOrganization>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

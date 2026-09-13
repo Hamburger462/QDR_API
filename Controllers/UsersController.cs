@@ -1,7 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 using QDR_Server.DTO;
 using QDR_Server.Services;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 namespace QDR_Server.Controllers
 {
@@ -102,6 +105,20 @@ namespace QDR_Server.Controllers
                 default:
                     return BadRequest();
             }
+        }
+
+        [Authorize]
+        [HttpGet("me")]
+        public async Task<ActionResult<UserDTO>> GetCurrentUser()
+        {
+            var userId = base.User.FindFirstValue(JwtRegisteredClaimNames.Sub);
+            if(userId == null) return NotFound();
+            if(Guid.TryParse(userId, out var result))
+            {
+                var user = await userService.GetUserById(result);
+                return Ok(user);
+            }
+            else return BadRequest();
         }
     }
 }

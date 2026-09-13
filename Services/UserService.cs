@@ -67,10 +67,17 @@ namespace QDR_Server.Services
                 Username = dto.Username,
                 Email = dto.Email,
                 Role = "Member",
-                Organizations = new List<Organization> { org },
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password)
             };
 
+            var userOrganization = new UserOrganization
+            {
+                User = user,
+                Organization = org,
+                Position = OrganizationPosition.Owner,
+            };
+
+            user.UserOrganizations.Add(userOrganization);
             context.Users.Add(user);
             await context.SaveChangesAsync();
 

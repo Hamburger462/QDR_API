@@ -7,7 +7,6 @@
         public required string Email { get; set; }
         public required string PasswordHash { get; set; }
         public string Role { get; set; } = string.Empty;
-        public List<Organization> Organizations { get; set; } = new();
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 

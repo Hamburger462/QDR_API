@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 using QDR_Server.Data;
 using QDR_Server.DTO;
 using QDR_Server.Models;
@@ -9,8 +10,10 @@ namespace QDR_Server.Services
     {
         Success,
         EventNotFound,
+        UserNotFound,
         OrganizationNotFound,
         CreationFailed,
+        NotEnoughPermissions,
     }
     public class EventService(AppDbContext context)
     {
@@ -44,11 +47,21 @@ namespace QDR_Server.Services
             return (result, EventOperationStatus.Success);
         }
 
-        public async Task<EventOperationStatus> CreateEvent(CreateEventDTO dto)
+        public async Task<EventOperationStatus> CreateEvent(CreateEventDTO dto, string UserID)
         {
             var orgExists = await context.Organizations.AnyAsync(o => o.Id == dto.OrganizationID);
-            if (!orgExists)
-                return EventOperationStatus.OrganizationNotFound;
+            if (!orgExists) return EventOperationStatus.OrganizationNotFound;
+            if (Guid.TryParse(UserID, out var result))
+            {
+                var userPosition = await context.UserOrganizations.FirstOrDefaultAsync(uo => uo.UserId == result && uo.OrganizationId == dto.OrganizationID);
+                if (userPosition == null) {
+                    return EventOperationStatus.UserNotFound;
+                }
+                if (!OrganizationPositionService.Has(userPosition.Position, OrganizationPermissions.CreateEvent)){
+                    return EventOperationStatus.NotEnoughPermissions;
+                }
+            }
+            
 
             var newEvent = new Event
             {

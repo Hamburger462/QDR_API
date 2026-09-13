@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.JsonWebTokens;
 using QDR_Server.DTO;
 using QDR_Server.DTO.ResponseMessages;
 using QDR_Server.Services;
+using System.Security.Claims;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -49,7 +51,11 @@ namespace QDR_Server.Controllers
         [HttpPost]
         public async Task<ActionResult> Create([FromBody] CreateEventDTO dto)
         {
-            var status = await eventService.CreateEvent(dto);
+            var userId = base.User.FindFirstValue(JwtRegisteredClaimNames.Sub);
+            if (userId == null) {
+                return NotFound();
+            }
+            var status = await eventService.CreateEvent(dto, userId);
             switch (status)
             {
                 case EventOperationStatus.OrganizationNotFound:
