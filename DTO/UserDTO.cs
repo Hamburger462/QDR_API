@@ -5,8 +5,7 @@
     string Username,
     string Email,
     string Role,
-    bool IsVerified,
-    List<Guid> OrganizationIds
+    bool IsVerified
 );
 
     public class CreateUserDTO
@@ -14,13 +13,11 @@
         public required string Username { get; set; }
         public required string Email { get; set; }
         public required string Password { get; set; }
-        public List<Guid> OrganizationIds { get; set; } = new();
     }
 
     public class UpdateUserDTO
     {
         public string? Username { get; set; }
         public string? Email { get; set; }
-        public List<Guid>? OrganizationIds { get; set; }
     }
 }

@@ -65,8 +65,7 @@ namespace QDR_Server.Controllers
                 user.Username,
                 user.Email,
                 user.Role,
-                user.IsVerified,
-                user.Organizations.Select(o => o.Id).ToList());
+                user.IsVerified);
 
             return CreatedAtAction(nameof(GetById), new { id = user.Id }, response);
         }

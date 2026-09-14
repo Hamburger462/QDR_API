@@ -24,8 +24,7 @@ namespace QDR_Server.Services
                     user.Username,
                     user.Email,
                     user.Role,
-                    user.IsVerified,
-                    user.Organizations.Select(o => o.Id).ToList()))
+                    user.IsVerified))
                 .ToListAsync();
             if (users.Count == 0) return (null, UserOperationStatus.UserNotFound);
             return (users, UserOperationStatus.Success);
@@ -34,7 +33,6 @@ namespace QDR_Server.Services
         public async Task<(UserDTO?, UserOperationStatus)> GetUserById(Guid id)
         {
             var user = await context.Users
-                .Include(u => u.Organizations)
                 .FirstOrDefaultAsync(u => u.Id == id);
 
             if(user == null) return (null, UserOperationStatus.UserNotFound) ;
@@ -45,8 +43,7 @@ namespace QDR_Server.Services
                 user.Username,
                 user.Email,
                 user.Role,
-                user.IsVerified,
-                user.Organizations.Select(o => o.Id).ToList()), UserOperationStatus.Success);
+                user.IsVerified), UserOperationStatus.Success);
         }
 
         public async Task<User?> GetUserByEmailForAuth(string email)
@@ -87,7 +84,6 @@ namespace QDR_Server.Services
         public async Task<UserOperationStatus> UpdateUser(Guid id, UpdateUserDTO dto)
         {
             var user = await context.Users
-                .Include(u => u.Organizations)
                 .FirstOrDefaultAsync(u => u.Id == id);
 
             if (user is null)
@@ -103,18 +99,6 @@ namespace QDR_Server.Services
                     return UserOperationStatus.EmailTaken;
 
                 user.Email = dto.Email;
-            }
-
-            if (dto.OrganizationIds is not null)
-            {
-                var orgs = await context.Organizations
-                    .Where(o => dto.OrganizationIds.Contains(o.Id))
-                    .ToListAsync();
-
-                if (orgs.Count != dto.OrganizationIds.Count)
-                    return UserOperationStatus.OrganizationNotFound;
-
-                user.Organizations = orgs;
             }
 
             await context.SaveChangesAsync();
